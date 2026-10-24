@@ -58,7 +58,7 @@ function render() {
     if (job.state === 'ready') {
       const link = document.createElement('a');
       link.className = 'download';
-      link.textContent = 'Download ↓';
+      link.textContent = 'Download';
       link.href = `/api/jobs/${job.id}/download`;
       actions.append(link);
     } else if (active.has(job.state)) {
