@@ -2,7 +2,6 @@ const form = document.querySelector('#convert-form');
 const jobsElement = document.querySelector('#jobs');
 const formError = document.querySelector('#form-error');
 const queueError = document.querySelector('#queue-error');
-const connection = document.querySelector('#connection');
 const active = new Set(['queued', 'fetching', 'downloading', 'converting']);
 const labels = {queued: 'In queue', fetching: 'Getting video details', downloading: 'Downloading audio', converting: 'Encoding MP3', ready: 'Ready to download', failed: 'Couldn’t convert', cancelled: 'Cancelled', expired: 'File expired'};
 let jobs = [];
@@ -81,13 +80,9 @@ async function submit(url, bitrate) {
 async function refresh() {
   try {
     const latest = await api('/api/jobs');
-    connection.textContent = 'Running locally';
-    connection.classList.remove('offline');
     showError(queueError, '');
     if (JSON.stringify(latest) !== JSON.stringify(jobs)) { jobs = latest; render(); }
   } catch {
-    connection.textContent = 'App offline';
-    connection.classList.add('offline');
     showError(queueError, 'Connection lost. Keep the local app running. Reconnecting automatically…');
   }
 }
