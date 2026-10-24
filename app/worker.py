@@ -69,7 +69,7 @@ def run(url, directory, bitrate):
     check_space()
     options = {
         "format": "bestaudio/best", "outtmpl": str(directory / "source.%(ext)s"),
-        "noplaylist": True, "quiet": True, "no_warnings": True,
+        "noplaylist": True, "quiet": True, "no_warnings": True, "no_color": True,
         "progress_hooks": [download_progress], "match_filter": filter_video,
         "max_filesize": max_bytes, "socket_timeout": 30, "retries": 3,
         "fragment_retries": 3, "js_runtimes": {"node": {}},
@@ -90,6 +90,9 @@ def run(url, directory, bitrate):
         source = Path(downloader.prepare_filename(info))
         if not source.exists():
             raise RuntimeError("No audio file was downloaded. Check the size limit and retry.")
+    check_space()
+    if duration and shutil.disk_usage(directory).free < duration * bitrate * 125 + 512 * 1024**2:
+        raise RuntimeError("Not enough disk space for the MP3 output.")
     emit(state="converting", progress=0)
     target = directory / "audio.mp3"
     encode(source, target, bitrate, duration, title)

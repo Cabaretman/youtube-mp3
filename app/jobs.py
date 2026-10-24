@@ -1,4 +1,5 @@
 import json
+from contextlib import contextmanager
 import os
 from pathlib import Path
 import re
@@ -72,8 +73,14 @@ class Jobs:
                 self.update(job["id"], state="failed", error="App restarted. Retry this conversion.")
         self.thread = threading.Thread(target=self.work, daemon=True)
 
+    @contextmanager
     def connect(self):
-        return sqlite3.connect(self.directory / "jobs.sqlite3")
+        db = sqlite3.connect(self.directory / "jobs.sqlite3")
+        try:
+            with db:
+                yield db
+        finally:
+            db.close()
 
     def list(self):
         with self.lock, self.connect() as db:
